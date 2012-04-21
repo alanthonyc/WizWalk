@@ -9,6 +9,7 @@ add z, 1
 set [z], 0x0101
 
 ; top bar sprite 0x8181
+;set z, 0x8181
 add z, 1
 set [z], 0x0101
 add z, 1
@@ -53,6 +54,37 @@ set [z], 0x00ff
 set PC, POP
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
+:storetiles ;A = Data to Read, B = Length, C = Destination, I = Iterator
+
+:tile0 DAT 0xff01, 0x0101
+:tile1 DAT 0x0101, 0x0101
+:tile2 DAT 0x0101, 0x01ff
+:tile3 DAT 0xff80, 0x8080
+:tile4 DAT 0x8080, 0x8080
+:tile5 DAT 0x8080, 0x80ff
+:tile6 DAT 0xff00, 0x0000
+:tile7 DAT 0x0000, 0x00ff
+
+SET b, 0x0010
+SET I, 0
+set b, 0x0010
+set c, 0x8180
+set a, tile0
+
+:storetiles_loop
+SET [c], [a]
+ADD a, 1
+ADD i, 1
+ADD c, 1
+IFE i, b
+    SET PC, storetiles_end
+SET PC, storetiles_loop
+
+:storetiles_end
+SET PC, POP
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
 
 ;=================================================
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
@@ -198,7 +230,8 @@ set PC, POP
 ;=================================================
 
 :main
-jsr spriteSetup
+;jsr spriteSetup
+jsr storetiles
 jsr drawMainWindow
 jsr drawWall
 
