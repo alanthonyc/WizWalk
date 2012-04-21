@@ -1,92 +1,32 @@
 set PC, main
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
-:spriteSetup
-; top left corner sprite 0x8180
-set z, 0x8180
-set [z], 0xff01
-add z, 1
-set [z], 0x0101
+:loadtiles 
+; Parameters:
+; A = Data to Read
+; B = Length
+; C = Destination
 
-; top bar sprite 0x8181
-;set z, 0x8181
-add z, 1
-set [z], 0x0101
-add z, 1
-set [z], 0x0101
+; Local:
+; I = Iterator
+set i, 0
 
-; top right corner 0x8182
-add z, 1
-set [z], 0x0101
-add z, 1
-set [z], 0x01ff
-
-; bottom left corner 0x8183
-add z, 1
-set [z], 0xff80
-add z, 1
-set [z], 0x8080
-
-; bottom bar 0x8184
-add z, 1
-set [z], 0x8080
-add z, 1
-set [z], 0x8080
-
-; bottom right corner 0x8185
-add z, 1
-set [z], 0x8080
-add z, 1
-set [z], 0x80ff
-
-; left bar 0x8186
-add z, 1
-set [z], 0xff00
-add z, 1
-set [z], 0x0000
-
-; right bar 0x8187
-add z, 1
-set [z], 0x0000
-add z, 1
-set [z], 0x00ff
-
-set PC, POP
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
-:storetiles ;A = Data to Read, B = Length, C = Destination, I = Iterator
-
-:tile0 DAT 0xff01, 0x0101
-:tile1 DAT 0x0101, 0x0101
-:tile2 DAT 0x0101, 0x01ff
-:tile3 DAT 0xff80, 0x8080
-:tile4 DAT 0x8080, 0x8080
-:tile5 DAT 0x8080, 0x80ff
-:tile6 DAT 0xff00, 0x0000
-:tile7 DAT 0x0000, 0x00ff
-
-SET b, 0x0010
-SET I, 0
-set b, 0x0010
-set c, 0x8180
-set a, tile0
-
-:storetiles_loop
+:loadtiles_loop
 SET [c], [a]
 ADD a, 1
 ADD i, 1
 ADD c, 1
 IFE i, b
-    SET PC, storetiles_end
-SET PC, storetiles_loop
+    SET PC, loadtiles_end
+SET PC, loadtiles_loop
 
-:storetiles_end
+:loadtiles_end
 SET PC, POP
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
 
 ;=================================================
+;===| Draw Near Wall Border
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
 :drawWindowTop
 set x, 0x8000
@@ -96,7 +36,7 @@ set [x], 0x2000
 add x, 1
 set [x], 0x2001
 ifg 0x801f, x
-set PC, drawWindowTop_loop
+	set PC, drawWindowTop_loop
 
 set [x], 0x2002
 
@@ -112,7 +52,7 @@ set [x], 0x2003
 add x, 1
 set [x], 0x2004
 ifg 0x817f, x
-set PC, drawWindowBottom_loop
+	set PC, drawWindowBottom_loop
 
 set [x], 0x2005
 
@@ -127,7 +67,7 @@ set x, 0x8000
 add x, 0x0020
 set [x], 0x2006
 ifg 0x812e, x
-set PC, drawWindowLeft_loop
+	set PC, drawWindowLeft_loop
 
 set PC, POP
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
@@ -140,7 +80,7 @@ set x, 0x801f
 add x, 0x0020
 set [x], 0x2007
 ifg 0x814f, x
-set PC, drawWindowRight_loop
+	set PC, drawWindowRight_loop
 
 set PC, POP
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
@@ -157,16 +97,18 @@ set PC, POP
 ;=================================================
 
 ;=================================================
+;===| Draw Middle Wall Border
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
-:drawWallTop
+:drawMiddleTop
 set x, 0x8067
 set [x], 0x2000
 
-:drawWallTop_loop
+:drawMiddleTop_loop
 add x, 1
 set [x], 0x2001
 ifg 0x8078, x
-set PC, drawWallTop_loop
+set PC, drawMiddleTop_loop
 
 set [x], 0x2002
 
@@ -174,15 +116,15 @@ set PC, POP
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
-:drawWallBottom
+:drawMiddleBottom
 set x, 0x8127
 set [x], 0x2003
 
-:drawWallBottom_loop
+:drawMiddleBottom_loop
 add x, 1
 set [x], 0x2004
 ifg 0x8138, x
-set PC, drawWallBottom_loop
+set PC, drawMiddleBottom_loop
 
 set [x], 0x2005
 
@@ -190,22 +132,22 @@ set PC, POP
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
-:drawWallLeft
+:drawMiddleLeft
 set x, 0x8067
 set i, 0
 
-:drawWallLeft_loop
+:drawMiddleLeft_loop
 add x, 0x0020
 add i, 1
 set [x], 0x2006
 ifg 5, i
-set PC, drawWallLeft_loop
+set PC, drawMiddleLeft_loop
 
 set PC, POP
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
-:drawWallRight
+:drawMiddleRight
 set x, 0x8078
 set i, 0
 
@@ -220,18 +162,47 @@ set PC, POP
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
-:drawWall
-jsr drawWallTop
-jsr drawWallBottom
-jsr drawWallLeft
-jsr drawWallRight
+:drawMiddle
+jsr drawMiddleTop
+jsr drawMiddleBottom
+jsr drawMiddleLeft
+jsr drawMiddleRight
 set PC, POP
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
 ;=================================================
 
-:main
-;jsr spriteSetup
-jsr storetiles
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
+:initStart
+
+; load border tiles
+set PUSH, a
+set PUSH, b
+set PUSH, c
+set b, 0x0010
+set c, 0x8180
+set a, border0
+jsr loadtiles
+set c, POP
+set b, POP
+set a, POP
+
+; draw intiial view
 jsr drawMainWindow
-jsr drawWall
+jsr drawMiddle
+
+set PC, POP
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
+
+:main
+jsr initStart
+
+
+:border0 DAT 0xff01, 0x0101 ; 0x8180 top left 
+:border1 DAT 0x0101, 0x0101 ; 0x8181 top
+:border2 DAT 0x0101, 0x01ff ; 0x8182 top right
+:border3 DAT 0xff80, 0x8080 ; 0x8183 bottom left
+:border4 DAT 0x8080, 0x8080 ; 0x8184 bottom
+:border5 DAT 0x8080, 0x80ff ; 0x8185 bottom right
+:border6 DAT 0xff00, 0x0000 ; 0x8186 left
+:border7 DAT 0x0000, 0x00ff ; 0x8187 right
 
