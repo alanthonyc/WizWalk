@@ -1,49 +1,131 @@
-set PC, main
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
-:loadtiles 
-; Parameters:
-; A = Data to Read
-; B = Length
-; C = Destination
-
-; Local:
-; I = Iterator
-set i, 0
-
-:loadtiles_loop
-SET [c], [a]
-ADD a, 1
-ADD i, 1
-ADD c, 1
-IFE i, b
-    SET PC, loadtiles_end
-SET PC, loadtiles_loop
-
-:loadtiles_end
-SET PC, POP
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
+set pc, main
 
 ;=================================================
-;===| Draw Near Wall Border
+;===| Draw Square
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
-:drawWindowTop
-set x, 0x8000
+:calculateCoordinateLocation
+; Input: X, Y Cartesian Coordinates
+; Output: Z for binary location
+
+set z, 0x8000
+set a, 0x0020
+mul a, y
+add z, a
+add z, x
+
+set pc, pop
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
+:drawSquareTop
+;Input:
+; x - X coordinate of line origin
+; y - Y coordinate of line origin
+; z - length of line
+
+; Calculate location on screen
+set push, z
+jsr calculateCoordinateLocation
+set x, z
+set z, pop
+
 set [x], 0x2000
 set i, 0
 
-:drawWindowTop_loop
+:drawSquareTop_loop
 add x, 1
 add i, 1
 set [x], 0x2001
-ifg 0x001f, i
-	set PC, drawWindowTop_loop
+ifg z, i
+	set PC, drawSquareTop_loop
 
 set [x], 0x2002
 
 set PC, POP
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
+:drawSquareBottom
+;Input:
+; x - X coordinate of line origin
+; y - Y coordinate of line origin
+; z - length of line
+
+; Calculate location on screen
+set push, z
+jsr calculateCoordinateLocation
+set x, z
+set z, pop
+
+set [x], 0x2003
+set i, 0
+
+:drawSquareBottom_loop
+add x, 1
+add i, 1
+set [x], 0x2004
+ifg z, i
+	set PC, drawSquareBottom_loop
+
+set [x], 0x2005
+
+set PC, POP
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
+:drawSquareLeft
+;Input:
+; x - X coordinate of line origin
+; y - Y coordinate of line origin
+; z - length of line
+
+; Calculate location on screen
+set push, z
+jsr calculateCoordinateLocation
+set x, z
+set z, pop
+
+set i, 0
+
+:drawSquareLeft_loop
+add x, 0x0020
+add i, 1
+set [x], 0x2006
+ifg z, i
+	set PC, drawSquareLeft_loop
+
+set PC, POP
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
+:drawSquareRight
+;Input:
+; x - X coordinate of line origin
+; y - Y coordinate of line origin
+; z - length of line
+
+; Calculate location on screen
+set push, z
+jsr calculateCoordinateLocation
+set x, z
+set z, pop
+
+set i, 0
+
+:drawSquareRight_loop
+add x, 0x0020
+add i, 1
+set [x], 0x2007
+ifg z, i
+	set PC, drawSquareRight_loop
+
+set PC, POP
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
+;=================================================
+
+;=================================================
+;===| Draw Near Wall Border
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
 :drawWindowBottom
@@ -95,10 +177,27 @@ set PC, POP
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
 :drawMainWindow
-jsr drawWindowTop
-jsr drawWindowBottom
-jsr drawWindowLeft
-jsr drawWindowRight
+
+set x, 0
+set y, 0
+set z, 0x001f
+jsr drawSquareTop
+
+set x, 0
+set y, 0x000b
+set z, 0x001f
+jsr drawSquareBottom
+
+set x, 0
+set y, 0x0000
+set z, 0x000a
+jsr drawSquareLeft
+
+set x, 0x001f
+set y, 0x0000
+set z, 0x000a
+jsr drawSquareRight
+
 set PC, POP
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
 
@@ -112,11 +211,13 @@ set PC, POP
 set x, 0x8067
 set [x], 0x2000
 
+set i, 0
 :drawMiddleTop_loop
 add x, 1
+add i, 1
 set [x], 0x2001
-ifg 0x8078, x
-set PC, drawMiddleTop_loop
+ifg 0x0011, i
+	set PC, drawMiddleTop_loop
 
 set [x], 0x2002
 
@@ -191,7 +292,7 @@ set [x], 0x2000
 add x, 1
 set [x], 0x2001
 ifg 0x80b3, x
-set PC, drawFarTop_loop
+	set PC, drawFarTop_loop
 
 set [x], 0x2002
 
@@ -207,7 +308,7 @@ set [x], 0x2003
 add x, 1
 set [x], 0x2004
 ifg 0x80f3, x
-set PC, drawFarBottom_loop
+	set PC, drawFarBottom_loop
 
 set [x], 0x2005
 
@@ -224,7 +325,7 @@ add x, 0x0020
 add i, 1
 set [x], 0x2006
 ifg 1, i
-set PC, drawFarLeft_loop
+	set PC, drawFarLeft_loop
 
 set PC, POP
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
@@ -239,7 +340,7 @@ add x, 0x0020
 add i, 1
 set [x], 0x2007
 ifg 1, i
-set PC, drawFarRight_loop
+	set PC, drawFarRight_loop
 
 set PC, POP
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
@@ -260,18 +361,18 @@ set PC, POP
 :initStart
 
 ; load border tiles
-set PUSH, a
-set PUSH, b
-set PUSH, c
+;set PUSH, a
+;set PUSH, b
+;set PUSH, c
 set b, 0x0010
 set c, 0x8180
 set a, border0
 jsr loadtiles
-set c, POP
-set b, POP
-set a, POP
+;set c, POP
+;set b, POP
+;set a, POP
 
-; draw intiial view
+; draw intial view
 jsr drawMainWindow
 jsr drawMiddle
 jsr drawFar
@@ -279,10 +380,37 @@ jsr drawFar
 set PC, POP
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
 
-:main
-jsr initStart
+;=================================================
+;===| Utilities
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
+:loadtiles 
+; Parameters:
+; A = Data to Read
+; B = Length
+; C = Destination
 
+; Local:
+; I = Iterator
+set i, 0
 
+:loadtiles_loop
+SET [c], [a]
+ADD a, 1
+ADD i, 1
+ADD c, 1
+IFE i, b
+    SET PC, loadtiles_end
+SET PC, loadtiles_loop
+
+:loadtiles_end
+SET PC, POP
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
+;=================================================
+
+;=================================================
+;===| Data
+
+;===| Border Tiles
 :border0 DAT 0xff01, 0x0101 ; 0x8180 top left 
 :border1 DAT 0x0101, 0x0101 ; 0x8181 top
 :border2 DAT 0x0101, 0x01ff ; 0x8182 top right
@@ -291,4 +419,16 @@ jsr initStart
 :border5 DAT 0x8080, 0x80ff ; 0x8185 bottom right
 :border6 DAT 0xff00, 0x0000 ; 0x8186 left
 :border7 DAT 0x0000, 0x00ff ; 0x8187 right
+;=================================================
+
+
+;=================================================
+;===| Main loop
+:main
+jsr initStart
+
+; inifite loop at the end, otherwise, it falls through to some weird code and mucks up my screen
+:end
+set pc, end
+;=================================================
 
