@@ -31,11 +31,13 @@ SET PC, POP
 :drawWindowTop
 set x, 0x8000
 set [x], 0x2000
+set i, 0
 
 :drawWindowTop_loop
 add x, 1
+add i, 1
 set [x], 0x2001
-ifg 0x801f, x
+ifg 0x001f, i
 	set PC, drawWindowTop_loop
 
 set [x], 0x2002
@@ -47,11 +49,13 @@ set PC, POP
 :drawWindowBottom
 set x, 0x8160
 set [x], 0x2003
+set i, 0
 
 :drawWindowBottom_loop
 add x, 1
+add i, 1
 set [x], 0x2004
-ifg 0x817f, x
+ifg 0x001f, i
 	set PC, drawWindowBottom_loop
 
 set [x], 0x2005
@@ -62,11 +66,13 @@ set PC, POP
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
 :drawWindowLeft
 set x, 0x8000
+set i, 0
 
 :drawWindowLeft_loop
 add x, 0x0020
+add i, 1
 set [x], 0x2006
-ifg 0x812e, x
+ifg 0x000a, i
 	set PC, drawWindowLeft_loop
 
 set PC, POP
@@ -75,11 +81,13 @@ set PC, POP
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
 :drawWindowRight
 set x, 0x801f
+set i, 0
 
 :drawWindowRight_loop
 add x, 0x0020
+add i, 1
 set [x], 0x2007
-ifg 0x814f, x
+ifg 0x000a, i
 	set PC, drawWindowRight_loop
 
 set PC, POP
@@ -151,12 +159,12 @@ set PC, POP
 set x, 0x8078
 set i, 0
 
-:drawWallRight_loop
+:drawMiddleRight_loop
 add x, 0x0020
 add i, 1
 set [x], 0x2007
 ifg 5, i
-set PC, drawWallRight_loop
+set PC, drawMiddleRight_loop
 
 set PC, POP
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
@@ -170,6 +178,83 @@ jsr drawMiddleRight
 set PC, POP
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
 ;=================================================
+
+;=================================================
+;===| Draw Far Wall Border
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
+:drawFarTop
+set x, 0x80ac
+set [x], 0x2000
+
+:drawFarTop_loop
+add x, 1
+set [x], 0x2001
+ifg 0x80b3, x
+set PC, drawFarTop_loop
+
+set [x], 0x2002
+
+set PC, POP
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
+:drawFarBottom
+set x, 0x80ec
+set [x], 0x2003
+
+:drawFarBottom_loop
+add x, 1
+set [x], 0x2004
+ifg 0x80f3, x
+set PC, drawFarBottom_loop
+
+set [x], 0x2005
+
+set PC, POP
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
+:drawFarLeft
+set x, 0x80ac
+set i, 0
+
+:drawFarLeft_loop
+add x, 0x0020
+add i, 1
+set [x], 0x2006
+ifg 1, i
+set PC, drawFarLeft_loop
+
+set PC, POP
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
+:drawFarRight
+set x, 0x80b3
+set i, 0
+
+:drawFarRight_loop
+add x, 0x0020
+add i, 1
+set [x], 0x2007
+ifg 1, i
+set PC, drawFarRight_loop
+
+set PC, POP
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
+:drawFar
+jsr drawFarTop
+jsr drawFarBottom
+jsr drawFarLeft
+jsr drawFarRight
+set PC, POP
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
+;=================================================
+
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
 :initStart
@@ -189,6 +274,7 @@ set a, POP
 ; draw intiial view
 jsr drawMainWindow
 jsr drawMiddle
+jsr drawFar
 
 set PC, POP
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
