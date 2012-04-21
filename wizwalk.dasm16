@@ -53,6 +53,8 @@ set [z], 0x00ff
 set PC, POP
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
 
+
+;=================================================
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
 :drawWindowTop
 set x, 0x8000
@@ -120,7 +122,83 @@ jsr drawWindowRight
 set PC, POP
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
 
+;=================================================
+
+;=================================================
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
+:drawWallTop
+set x, 0x8067
+set [x], 0x2000
+
+:drawWallTop_loop
+add x, 1
+set [x], 0x2001
+ifg 0x8078, x
+set PC, drawWallTop_loop
+
+set [x], 0x2002
+
+set PC, POP
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
+:drawWallBottom
+set x, 0x8127
+set [x], 0x2003
+
+:drawWallBottom_loop
+add x, 1
+set [x], 0x2004
+ifg 0x8138, x
+set PC, drawWallBottom_loop
+
+set [x], 0x2005
+
+set PC, POP
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
+:drawWallLeft
+set x, 0x8067
+set i, 0
+
+:drawWallLeft_loop
+add x, 0x0020
+add i, 1
+set [x], 0x2006
+ifg 5, i
+set PC, drawWallLeft_loop
+
+set PC, POP
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
+:drawWallRight
+set x, 0x8078
+set i, 0
+
+:drawWallRight_loop
+add x, 0x0020
+add i, 1
+set [x], 0x2007
+ifg 5, i
+set PC, drawWallRight_loop
+
+set PC, POP
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
+:drawWall
+jsr drawWallTop
+jsr drawWallBottom
+jsr drawWallLeft
+jsr drawWallRight
+set PC, POP
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
+;=================================================
+
 :main
 jsr spriteSetup
 jsr drawMainWindow
+jsr drawWall
 
