@@ -1,21 +1,102 @@
 set pc, main
 
+
 ;=================================================
-;===| Draw Square
+;===| Draw Near Wall Outline
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
-:calculateCoordinateLocation
-; Input: X, Y Cartesian Coordinates
-; Output: Z for binary location
+:drawMainWindow
 
-set z, 0x8000
-set a, 0x0020
-mul a, y
-add z, a
-add z, x
+set x, 0
+set y, 0
+set z, 0x001f
+jsr drawSquareTop
 
-set pc, pop
+set x, 0
+set y, 0x000b
+set z, 0x001f
+jsr drawSquareBottom
+
+set x, 0
+set y, 0x0000
+set z, 0x000a
+jsr drawSquareLeft
+
+set x, 0x001f
+set y, 0x0000
+set z, 0x000a
+jsr drawSquareRight
+
+set PC, POP
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
+
+;=================================================
+
+;=================================================
+;===| Draw Middle Wall Outline
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
+:drawMiddle
+
+set x, 0x0005
+set y, 0x0003
+set z, 0x0015
+jsr drawSquareTop
+
+set x, 0x0005
+set y, 0x0009
+set z, 0x0015
+jsr drawSquareBottom
+
+set x, 0x0005
+set y, 0x0003
+set z, 0x0005
+jsr drawSquareLeft
+
+set x, 0x001a
+set y, 0x0003
+set z, 0x0005
+jsr drawSquareRight
+
+set PC, POP
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
+;=================================================
+
+;=================================================
+;===| Draw Far Wall Outline
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
+:drawFar
+
+set x, 0x000b
+set y, 0x0005
+set z, 0x0009
+jsr drawSquareTop
+
+set x, 0x000b
+set y, 0x0007
+set z, 0x0009
+jsr drawSquareBottom
+
+set x, 0x000b
+set y, 0x0005
+set z, 0x0001
+jsr drawSquareLeft
+
+set x, 0x0034
+set y, 0x0004
+set z, 0x0001
+jsr drawSquareRight
+
+set PC, POP
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
+;=================================================
+
+;=================================================
+;===| Main Logic
+;===============
+
+;===| Draw Square
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
 :drawSquareTop
@@ -123,254 +204,20 @@ ifg z, i
 set PC, POP
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
 ;=================================================
-
-;=================================================
-;===| Draw Near Wall Border
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
-:drawWindowBottom
-set x, 0x8160
-set [x], 0x2003
-set i, 0
-
-:drawWindowBottom_loop
-add x, 1
-add i, 1
-set [x], 0x2004
-ifg 0x001f, i
-	set PC, drawWindowBottom_loop
-
-set [x], 0x2005
-
-set PC, POP
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
-:drawWindowLeft
-set x, 0x8000
-set i, 0
-
-:drawWindowLeft_loop
-add x, 0x0020
-add i, 1
-set [x], 0x2006
-ifg 0x000a, i
-	set PC, drawWindowLeft_loop
-
-set PC, POP
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
-:drawWindowRight
-set x, 0x801f
-set i, 0
-
-:drawWindowRight_loop
-add x, 0x0020
-add i, 1
-set [x], 0x2007
-ifg 0x000a, i
-	set PC, drawWindowRight_loop
-
-set PC, POP
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
-:drawMainWindow
-
-set x, 0
-set y, 0
-set z, 0x001f
-jsr drawSquareTop
-
-set x, 0
-set y, 0x000b
-set z, 0x001f
-jsr drawSquareBottom
-
-set x, 0
-set y, 0x0000
-set z, 0x000a
-jsr drawSquareLeft
-
-set x, 0x001f
-set y, 0x0000
-set z, 0x000a
-jsr drawSquareRight
-
-set PC, POP
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
-
-;=================================================
-
-;=================================================
-;===| Draw Middle Wall Border
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
-:drawMiddleTop
-set x, 0x8067
-set [x], 0x2000
-
-set i, 0
-:drawMiddleTop_loop
-add x, 1
-add i, 1
-set [x], 0x2001
-ifg 0x0011, i
-	set PC, drawMiddleTop_loop
-
-set [x], 0x2002
-
-set PC, POP
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
-:drawMiddleBottom
-set x, 0x8127
-set [x], 0x2003
-
-:drawMiddleBottom_loop
-add x, 1
-set [x], 0x2004
-ifg 0x8138, x
-set PC, drawMiddleBottom_loop
-
-set [x], 0x2005
-
-set PC, POP
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
-:drawMiddleLeft
-set x, 0x8067
-set i, 0
-
-:drawMiddleLeft_loop
-add x, 0x0020
-add i, 1
-set [x], 0x2006
-ifg 5, i
-set PC, drawMiddleLeft_loop
-
-set PC, POP
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
-:drawMiddleRight
-set x, 0x8078
-set i, 0
-
-:drawMiddleRight_loop
-add x, 0x0020
-add i, 1
-set [x], 0x2007
-ifg 5, i
-set PC, drawMiddleRight_loop
-
-set PC, POP
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
-:drawMiddle
-jsr drawMiddleTop
-jsr drawMiddleBottom
-jsr drawMiddleLeft
-jsr drawMiddleRight
-set PC, POP
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
-;=================================================
-
-;=================================================
-;===| Draw Far Wall Border
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
-:drawFarTop
-set x, 0x80ac
-set [x], 0x2000
-
-:drawFarTop_loop
-add x, 1
-set [x], 0x2001
-ifg 0x80b3, x
-	set PC, drawFarTop_loop
-
-set [x], 0x2002
-
-set PC, POP
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
-:drawFarBottom
-set x, 0x80ec
-set [x], 0x2003
-
-:drawFarBottom_loop
-add x, 1
-set [x], 0x2004
-ifg 0x80f3, x
-	set PC, drawFarBottom_loop
-
-set [x], 0x2005
-
-set PC, POP
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
-:drawFarLeft
-set x, 0x80ac
-set i, 0
-
-:drawFarLeft_loop
-add x, 0x0020
-add i, 1
-set [x], 0x2006
-ifg 1, i
-	set PC, drawFarLeft_loop
-
-set PC, POP
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
-:drawFarRight
-set x, 0x80b3
-set i, 0
-
-:drawFarRight_loop
-add x, 0x0020
-add i, 1
-set [x], 0x2007
-ifg 1, i
-	set PC, drawFarRight_loop
-
-set PC, POP
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
-:drawFar
-jsr drawFarTop
-jsr drawFarBottom
-jsr drawFarLeft
-jsr drawFarRight
-set PC, POP
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
-;=================================================
-
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
 :initStart
 
 ; load border tiles
-;set PUSH, a
-;set PUSH, b
-;set PUSH, c
+set PUSH, a
+set PUSH, b
+set PUSH, c
 set b, 0x0010
 set c, 0x8180
 set a, border0
 jsr loadtiles
-;set c, POP
-;set b, POP
-;set a, POP
+set c, POP
+set b, POP
+set a, POP
 
 ; draw intial view
 jsr drawMainWindow
@@ -379,6 +226,7 @@ jsr drawFar
 
 set PC, POP
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
+;=================================================
 
 ;=================================================
 ;===| Utilities
@@ -405,6 +253,21 @@ SET PC, loadtiles_loop
 :loadtiles_end
 SET PC, POP
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
+:calculateCoordinateLocation
+; Input: X, Y Cartesian Coordinates
+; Output: Z for binary location
+
+set z, 0x8000
+set a, 0x0020
+mul a, y
+add z, a
+add z, x
+
+set pc, pop
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
+
 ;=================================================
 
 ;=================================================
