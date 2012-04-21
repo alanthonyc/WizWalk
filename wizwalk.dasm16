@@ -1,0 +1,126 @@
+set PC, main
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
+:spriteSetup
+; top left corner sprite 0x8180
+set z, 0x8180
+set [z], 0xff01
+add z, 1
+set [z], 0x0101
+
+; top bar sprite 0x8181
+add z, 1
+set [z], 0x0101
+add z, 1
+set [z], 0x0101
+
+; top right corner 0x8182
+add z, 1
+set [z], 0x0101
+add z, 1
+set [z], 0x01ff
+
+; bottom left corner 0x8183
+add z, 1
+set [z], 0xff80
+add z, 1
+set [z], 0x8080
+
+; bottom bar 0x8184
+add z, 1
+set [z], 0x8080
+add z, 1
+set [z], 0x8080
+
+; bottom right corner 0x8185
+add z, 1
+set [z], 0x8080
+add z, 1
+set [z], 0x80ff
+
+; left bar 0x8186
+add z, 1
+set [z], 0xff00
+add z, 1
+set [z], 0x0000
+
+; right bar 0x8187
+add z, 1
+set [z], 0x0000
+add z, 1
+set [z], 0x00ff
+
+set PC, POP
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
+:drawWindowTop
+set x, 0x8000
+set [x], 0x2000
+
+:drawWindowTop_loop
+add x, 1
+set [x], 0x2001
+ifg 0x801f, x
+set PC, drawWindowTop_loop
+
+set [x], 0x2002
+
+set PC, POP
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
+:drawWindowBottom
+set x, 0x8160
+set [x], 0x2003
+
+:drawWindowBottom_loop
+add x, 1
+set [x], 0x2004
+ifg 0x817f, x
+set PC, drawWindowBottom_loop
+
+set [x], 0x2005
+
+set PC, POP
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
+:drawWindowLeft
+set x, 0x8000
+
+:drawWindowLeft_loop
+add x, 0x0020
+set [x], 0x2006
+ifg 0x812e, x
+set PC, drawWindowLeft_loop
+
+set PC, POP
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
+:drawWindowRight
+set x, 0x801f
+
+:drawWindowRight_loop
+add x, 0x0020
+set [x], 0x2007
+ifg 0x814f, x
+set PC, drawWindowRight_loop
+
+set PC, POP
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
+:drawMainWindow
+jsr drawWindowTop
+jsr drawWindowBottom
+jsr drawWindowLeft
+jsr drawWindowRight
+set PC, POP
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
+
+:main
+jsr spriteSetup
+jsr drawMainWindow
+
