@@ -284,13 +284,6 @@ set c, POP
 set b, POP
 set a, POP
 
-; draw intial view
-jsr drawMainWindow
-;jsr drawMiddle
-;jsr drawFar
-jsr clearScreen
-jsr drawSolidWall
-
 set PC, POP
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
 ;=================================================
@@ -357,9 +350,43 @@ set pc, pop
 :main
 jsr initStart
 
+; draw intial view
+jsr drawMainWindow
+;jsr drawMiddle
+;jsr drawFar
+;jsr clearScreen
+jsr drawSolidWall
+
+set j, 0
+set b, 0
+:inputLoop
+ife [0x9000+b], 0
+	set pc, inputLoop
+
+jsr clearScreen
+add b, 1
+ife b, 16
+	set b, 0
+
+ifn j, 0
+	set pc, faceSolidWall
+
+:faceTunnel
+set j, 1
+jsr drawMainWindow
+jsr drawMiddle
+jsr drawFar
+set pc, inputLoop
+    
+:faceSolidWall
+set j, 0
+jsr drawMainWindow
+jsr drawSolidWall
+set pc, inputLoop
+
+
 ; inifite loop at the end, otherwise, it falls through to some weird code and mucks up my screen
 :end
 set pc, end
 ;=================================================
-
 
