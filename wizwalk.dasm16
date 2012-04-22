@@ -352,36 +352,36 @@ jsr initStart
 
 ; draw intial view
 jsr drawMainWindow
-;jsr drawMiddle
-;jsr drawFar
-;jsr clearScreen
-jsr drawSolidWall
+jsr drawMiddle
+jsr drawFar
 
 set j, 0
 set b, 0
+
 :inputLoop
 ife [0x9000+b], 0
 	set pc, inputLoop
 
+set [0x9000+b], 0
 jsr clearScreen
 add b, 1
 ife b, 16
 	set b, 0
 
 ifn j, 0
-	set pc, faceSolidWall
+	set pc, faceTunnel
+    
+:faceSolidWall
+set j, 1
+jsr drawMainWindow
+jsr drawSolidWall
+set pc, inputLoop
 
 :faceTunnel
-set j, 1
+set j, 0
 jsr drawMainWindow
 jsr drawMiddle
 jsr drawFar
-set pc, inputLoop
-    
-:faceSolidWall
-set j, 0
-jsr drawMainWindow
-jsr drawSolidWall
 set pc, inputLoop
 
 
@@ -389,4 +389,5 @@ set pc, inputLoop
 :end
 set pc, end
 ;=================================================
+
 
