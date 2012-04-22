@@ -1,12 +1,52 @@
 set pc, main
 
 
+;=================================================
+;===| Draw Door Facing
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
+:drawDoorFacing
+
+; top left of door
+set x, 8
+set y, 3
+; Calculate location on screen
+set push, z
+jsr calculateCoordinateLocation
+set x, z
+set z, pop
+set [x], 0x2000
+
+set x, 0x0008
+set y, 0x0003
+set z, 0x000f
+jsr drawHorizontalLine
+
+; right of door
+set x, 23
+set y, 2
+set z, 7
+set a, 0x2006
+jsr drawVerticalLine
+
+; left of door
+set x, 8
+set y, 3
+set z, 6
+set a, 0x2006
+jsr drawVerticalLine
+
+set PC, POP
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
+
+;=================================================
+
 
 ;=================================================
 ;===| Draw Door Right Far
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
-:drawDoorRight
+:drawDoorRightFar
 
 ; top left of door
 set x, 23
@@ -437,7 +477,7 @@ jsr initStart
 jsr drawMainWindow
 jsr drawMiddle
 jsr drawFar
-jsr drawDoorRight
+jsr drawDoorRightFar
 
 set j, 0
 set b, 0
@@ -458,7 +498,8 @@ ifn j, 0
 :faceSolidWall
 set j, 1
 jsr drawMainWindow
-jsr drawSolidWall
+;jsr drawSolidWall
+jsr drawDoorFacing
 set pc, inputLoop
 
 :faceTunnel
@@ -466,6 +507,7 @@ set j, 0
 jsr drawMainWindow
 jsr drawMiddle
 jsr drawFar
+jsr drawDoorRightFar
 set pc, inputLoop
 
 
@@ -473,5 +515,4 @@ set pc, inputLoop
 :end
 set pc, end
 ;=================================================
-
 
