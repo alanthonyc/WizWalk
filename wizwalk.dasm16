@@ -116,6 +116,24 @@ set PC, POP
 ;===| Drawing Functions
 ;===============
 
+;===| Clear Screen
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
+:clearScreen
+
+; Calculate location on screen
+set x, 0x8000
+
+:clearNextCoordinate
+set [x], 0x0000
+add x, 1
+ifg 0x817f, x
+	set pc, clearNextCoordinate
+
+set PC, POP
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
+
+
 ;===| Draw Lines
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
@@ -270,6 +288,7 @@ set a, POP
 jsr drawMainWindow
 ;jsr drawMiddle
 ;jsr drawFar
+jsr clearScreen
 jsr drawSolidWall
 
 set PC, POP
