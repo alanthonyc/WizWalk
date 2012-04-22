@@ -50,6 +50,65 @@ set pc, pop
 ;=================================================
 
 ;=================================================
+;===| Draw Door Right Near
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
+:drawDoorRightNear
+; locals:
+set push, x
+set push, y
+set push, z
+set push, a
+
+; top right of door
+set x, 29
+set y, 2
+; Calculate location on screen
+jsr calculateCoordinateLocation
+set x, z
+set [x], 0x2009
+
+; top left of door
+set x, 28
+set y, 2
+; Calculate location on screen
+jsr calculateCoordinateLocation
+set x, z
+set [x], 0x2008
+
+; bottom right of door
+set x, 27
+set y, 9
+; Calculate location on screen
+jsr calculateCoordinateLocation
+set x, z
+set [x], 0x200a
+
+; left of door
+set x, 27
+set y, 2
+set z, 6
+set a, 0x2007
+jsr drawVerticalLine
+
+; right of door
+set x, 29
+set y, 2
+set z, 7
+set a, 0x2007
+jsr drawVerticalLine
+
+:drawDoorRightNear_end
+set a, pop
+set z, pop
+set y, pop
+set x, pop
+set pc, pop
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
+
+;=================================================
+
+;=================================================
 ;===| Draw Door Left Near
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
@@ -668,7 +727,7 @@ set pc, inputLoop
 jsr drawMainWindow
 jsr drawMiddle
 jsr drawFar
-jsr drawDoorRightFar
+jsr drawDoorRightNear
 set pc, inputLoop
 
 :faceWest
