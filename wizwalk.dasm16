@@ -1,6 +1,54 @@
 set pc, main
 
 
+
+;=================================================
+;===| Draw Door Right Far
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
+:drawDoorRight
+
+; top left of door
+set x, 23
+set y, 4
+; Calculate location on screen
+set push, z
+jsr calculateCoordinateLocation
+set x, z
+set z, pop
+set [x], 0x2009
+
+; top right of door
+set x, 22
+set y, 4
+; Calculate location on screen
+set push, z
+jsr calculateCoordinateLocation
+set x, z
+set z, pop
+set [x], 0x2008
+
+; top right of door
+set x, 22
+set y, 4
+set z, 3
+set a, 0x2006
+jsr drawVerticalLine
+
+; top right of door
+set x, 23
+set y, 4
+set z, 3
+set a, 0x2007
+jsr drawVerticalLine
+
+set PC, POP
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
+
+;=================================================
+
+
+
 ;=================================================
 ;===| Draw Near Wall Outline
 
@@ -161,6 +209,32 @@ ifg z, i
 set PC, POP
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
+:drawVerticalLine
+;Input:
+; x - X coordinate of line origin
+; y - Y coordinate of line origin
+; z - length of line
+; a - character to draw
+
+; Calculate location on screen
+set push, z
+jsr calculateCoordinateLocation
+set x, z
+set z, pop
+
+set i, 0
+
+:drawVerticalLine_loop
+add x, 0x0020
+add i, 1
+set [x], a
+ifg z, i
+	set PC, drawVerticalLine_loop
+
+set PC, POP
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
+
 ;===| Draw Squares
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
@@ -276,7 +350,7 @@ set PC, POP
 set PUSH, a
 set PUSH, b
 set PUSH, c
-set b, 0x0010
+set b, 0x0014
 set c, 0x8180
 set a, border0
 jsr loadtiles
@@ -319,11 +393,15 @@ SET PC, POP
 ; Input: X, Y Cartesian Coordinates
 ; Output: Z for binary location
 
+set push, a
+
 set z, 0x8000
 set a, 0x0020
 mul a, y
 add z, a
 add z, x
+
+set a, pop
 
 set pc, pop
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
@@ -342,6 +420,11 @@ set pc, pop
 :border5 DAT 0x8080, 0x80ff ; 0x8185 bottom right
 :border6 DAT 0xff00, 0x0000 ; 0x8186 left
 :border7 DAT 0x0000, 0x00ff ; 0x8187 right
+
+;===| Door Tiles
+:doorRight0 DAT 0x8040, 0x2010 ; 0x8188 top left
+:doorRight1 DAT 0x0804, 0x02ff ; 0x8189 top right
+
 ;=================================================
 
 
@@ -354,6 +437,7 @@ jsr initStart
 jsr drawMainWindow
 jsr drawMiddle
 jsr drawFar
+jsr drawDoorRight
 
 set j, 0
 set b, 0
