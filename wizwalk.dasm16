@@ -49,6 +49,64 @@ set pc, pop
 ;=================================================
 
 ;=================================================
+;===| Draw Door Left Near
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
+:drawDoorLeftNear
+
+set push, x
+set push, y
+set push, z
+set push, a
+
+; top left of door
+set x, 2
+set y, 2
+; Calculate location on screen
+jsr calculateCoordinateLocation
+set x, z
+set [x], 0x200b
+
+; top right of door
+set x, 3
+set y, 2
+; Calculate location on screen
+jsr calculateCoordinateLocation
+set x, z
+set [x], 0x200c
+
+; bottom right of door
+set x, 3
+set y, 9
+; Calculate location on screen
+jsr calculateCoordinateLocation
+set x, z
+set [x], 0x200a
+
+; left of door
+set x, 2
+set y, 2
+set z, 7
+set a, 0x2006
+jsr drawVerticalLine
+
+; right of door
+set x, 3
+set y, 2
+set z, 6
+set a, 0x2007
+jsr drawVerticalLine
+
+set a, pop
+set z, pop
+set y, pop
+set x, pop
+set pc, pop
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
+
+;=================================================
+
+;=================================================
 ;===| Draw Door Right Far
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
@@ -472,7 +530,7 @@ set PUSH, b
 set PUSH, c
 
 ; load border tiles
-set b, 0x0016
+set b, 0x001a
 set c, 0x8180
 set a, border0
 jsr loadtiles
@@ -549,6 +607,8 @@ set pc, pop
 :doorRight0 DAT 0x8040, 0x2010 ; 0x8188 top left
 :doorRight1 DAT 0x0804, 0x02ff ; 0x8189 top right
 :doorRight2 DAT 0x0000, 0x001f ; 0x818a bottom right
+:doorLeft0 DAT 0xff02, 0x0408  ; 0x818b top left
+:doorLeft1 Dat 0x1020, 0x4080  ; 0x818c top right
 
 ;=================================================
 
@@ -563,6 +623,7 @@ jsr drawMainWindow
 jsr drawMiddle
 jsr drawFar
 jsr drawDoorRightFar
+jsr drawDoorLeftNear
 
 set j, 0
 set b, 0
@@ -593,6 +654,7 @@ jsr drawMainWindow
 jsr drawMiddle
 jsr drawFar
 jsr drawDoorRightFar
+jsr drawDoorLeftNear
 set pc, inputLoop
 
 ; inifite loop at the end, otherwise, it falls through to some weird code and mucks up my screen
