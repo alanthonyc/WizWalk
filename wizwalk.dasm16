@@ -13,18 +13,18 @@ set z, 0x001f
 jsr drawSquareTop
 
 set x, 0
-set y, 0x000b
+set y, 0x000a
 set z, 0x001f
 jsr drawSquareBottom
 
 set x, 0
 set y, 0x0000
-set z, 0x000a
+set z, 0x0009
 jsr drawSquareLeft
 
 set x, 0x001f
 set y, 0x0000
-set z, 0x000a
+set z, 0x0009
 jsr drawSquareRight
 
 set PC, POP
@@ -38,24 +38,24 @@ set PC, POP
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
 :drawMiddle
 
-set x, 0x0005
+set x, 0x0006
 set y, 0x0003
-set z, 0x0015
+set z, 0x0013
 jsr drawSquareTop
 
-set x, 0x0005
-set y, 0x0009
-set z, 0x0015
+set x, 0x0006
+set y, 0x0008
+set z, 0x0013
 jsr drawSquareBottom
 
-set x, 0x0005
+set x, 0x0006
 set y, 0x0003
-set z, 0x0005
+set z, 0x0004
 jsr drawSquareLeft
 
-set x, 0x001a
+set x, 0x0019
 set y, 0x0003
-set z, 0x0005
+set z, 0x0004
 jsr drawSquareRight
 
 set PC, POP
@@ -274,7 +274,7 @@ set pc, pop
 ;===| Data
 
 ;===| Border Tiles
-:border0 DAT 0xff01, 0x0101 ; 0x8180 top left 
+:border0 DAT 0xff01, 0x0101 ; 0x8180 top left  
 :border1 DAT 0x0101, 0x0101 ; 0x8181 top
 :border2 DAT 0x0101, 0x01ff ; 0x8182 top right
 :border3 DAT 0xff80, 0x8080 ; 0x8183 bottom left
@@ -294,4 +294,5 @@ jsr initStart
 :end
 set pc, end
 ;=================================================
+
 
