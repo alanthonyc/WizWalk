@@ -5,7 +5,7 @@ set pc, main
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
 :drawDoorFacing
-
+; locals:
 set push, x
 set push, y
 set push, z
@@ -39,6 +39,7 @@ set z, 6
 set a, 0x2006
 jsr drawVerticalLine
 
+:drawDoorFacing_end
 set a, pop
 set z, pop
 set y, pop
@@ -53,7 +54,7 @@ set pc, pop
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
 :drawDoorLeftNear
-
+; locals:
 set push, x
 set push, y
 set push, z
@@ -97,6 +98,7 @@ set z, 6
 set a, 0x2007
 jsr drawVerticalLine
 
+:drawDoorLeftNear_end
 set a, pop
 set z, pop
 set y, pop
@@ -111,7 +113,7 @@ set pc, pop
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
 :drawDoorRightFar
-
+; locals:
 set push, x
 set push, y
 set push, z
@@ -155,6 +157,7 @@ set z, 3
 set a, 0x2007
 jsr drawVerticalLine
 
+:drawDoorRightFar_end
 set a, pop
 set z, pop
 set y, pop
@@ -169,7 +172,7 @@ set pc, pop
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
 :drawMainWindow
-
+; locals:
 set push, x
 set push, y
 set push, z
@@ -194,6 +197,7 @@ set y, 0x0000
 set z, 0x000a
 jsr drawSquareRight
 
+:drawMainWindow_end
 set z, pop
 set y, pop
 set x, pop
@@ -207,7 +211,7 @@ set pc, pop
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
 :drawMiddle
-
+; locals
 set push, x
 set push, y
 set push, z
@@ -232,6 +236,7 @@ set y, 0x0003
 set z, 0x0005
 jsr drawSquareRight
 
+:drawMiddle_end
 set z, pop
 set y, pop
 set x, pop
@@ -244,7 +249,6 @@ set pc, pop
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
 :drawFar
-
 ; locals:
 set push, x
 set push, y
@@ -270,6 +274,7 @@ set y, 0x0004
 set z, 0x0002
 jsr drawSquareRight
 
+:drawFar_end
 set z, pop
 set y, pop
 set x, pop
@@ -278,11 +283,10 @@ set pc, pop
 ;=================================================
 
 ;=================================================
-;===| Draw a Solid Wall
+;===| Draw Wall Facing
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
-:drawSolidWall
-
+:drawWallFacing
 ; locals:
 set push, x
 set push, y
@@ -301,6 +305,7 @@ set z, 0x001e
 set a, 0x2001
 jsr drawHorizontalLine
 
+:drawWallFacing_end
 set a, pop
 set z, pop
 set y, pop
@@ -311,13 +316,11 @@ set pc, pop
 
 ;=================================================
 ;===| Drawing Functions
-;===============
+;=================================================
 
 ;===| Clear Screen
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
 :clearScreen
-
 ; locals:
 set push, x
 
@@ -329,14 +332,14 @@ set [x], 0x0000
 add x, 1
 ifg 0x817f, x
 	set pc, clearNextCoordinate
-    
+
+:clearScreen_end
 set x, pop
 set pc, pop
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
 
 
 ;===| Draw Lines
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
 :drawHorizontalLine
 ;Input:
@@ -344,7 +347,6 @@ set pc, pop
 ; y - Y coordinate of line origin
 ; z - length of line
 ; a - character to draw
-
 ; locals:
 set push, i
 
@@ -363,6 +365,7 @@ set [x], a
 ifg z, i
 	set PC, drawHorizontalLine_loop
 
+:drawHorizontalLine_end
 set i, pop
 set pc, pop
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
@@ -374,7 +377,6 @@ set pc, pop
 ; y - Y coordinate of line origin
 ; z - length of line
 ; a - character to draw
-
 ; locals:
 set push, i
 
@@ -393,6 +395,7 @@ set [x], a
 ifg z, i
 	set PC, drawVerticalLine_loop
 
+:drawVerticalLine_end
 set i, pop
 set pc, pop
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
@@ -405,7 +408,6 @@ set pc, pop
 ; x - X coordinate of line origin
 ; y - Y coordinate of line origin
 ; z - length of line
-
 ; locals:
 set push, i
 
@@ -427,6 +429,7 @@ ifg z, i
 
 set [x], 0x2002
 
+:drawSquareTop_end
 set i, pop
 set pc, pop
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
@@ -437,7 +440,6 @@ set pc, pop
 ; x - X coordinate of line origin
 ; y - Y coordinate of line origin
 ; z - length of line
-
 ; locals:
 set push, i
 
@@ -459,6 +461,7 @@ ifg z, i
 
 set [x], 0x2005
 
+:drawSquareBottom_end
 set i, pop
 set pc, pop
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
@@ -469,7 +472,6 @@ set pc, pop
 ; x - X coordinate of line origin
 ; y - Y coordinate of line origin
 ; z - length of line
-
 ; locals:
 set push, i
 
@@ -488,6 +490,7 @@ set [x], 0x2006
 ifg z, i
 	set PC, drawSquareLeft_loop
 
+:drawSquareLeft_end
 set i, pop
 set pc, pop
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
@@ -498,7 +501,6 @@ set pc, pop
 ; x - X coordinate of line origin
 ; y - Y coordinate of line origin
 ; z - length of line
-
 ; locals:
 set push, i
 
@@ -517,13 +519,13 @@ set [x], 0x2007
 ifg z, i
 	set PC, drawSquareRight_loop
 
+:drawSquareRight_end
 set i, pop
 set pc, pop
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
 ;=================================================
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
 :initStart
-
 ; locals:
 set PUSH, a
 set PUSH, b
@@ -535,6 +537,7 @@ set c, 0x8180
 set a, border0
 jsr loadtiles
 
+:initStart_end
 set c, pop
 set b, pop
 set a, pop
@@ -550,7 +553,6 @@ set pc, pop
 ; A = Data to Read
 ; B = Length
 ; C = Destination
-
 ; locals
 set push,i
 
@@ -574,7 +576,6 @@ set pc, pop
 :calculateCoordinateLocation
 ; Input: X, Y Cartesian Coordinates
 ; Output: Z for binary location
-
 ; locals:
 set push, a
 
@@ -584,6 +585,7 @@ mul a, y
 add z, a
 add z, x
 
+:calculateCoordinateLocation_end
 set a, pop
 set pc, pop
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
@@ -638,24 +640,42 @@ add b, 1
 ife b, 16
 	set b, 0
 
-ifn j, 0
-	set pc, faceTunnel
-    
-:faceSolidWall
-set j, 1
-jsr drawMainWindow
-;jsr drawSolidWall
-jsr drawDoorFacing
-set pc, inputLoop
+add j, 1
+ife j, 4
+	set j, 0
+      
+ife j, 1
+	set pc faceEast
+ife j, 2
+	set pc faceSouth
+ife j, 3
+	set pc faceWest
 
-:faceTunnel
-set j, 0
+:faceNorth
 jsr drawMainWindow
 jsr drawMiddle
 jsr drawFar
 jsr drawDoorRightFar
 jsr drawDoorLeftNear
 set pc, inputLoop
+
+:faceEast
+jsr drawMainWindow
+jsr drawWallFacing
+set pc, inputLoop
+
+:faceSouth
+jsr drawMainWindow
+jsr drawMiddle
+jsr drawFar
+jsr drawDoorRightFar
+set pc, inputLoop
+
+:faceWest
+jsr drawMainWindow
+jsr drawDoorFacing
+set pc, inputLoop
+
 
 ; inifite loop at the end, otherwise, it falls through to some weird code and mucks up my screen
 :end
