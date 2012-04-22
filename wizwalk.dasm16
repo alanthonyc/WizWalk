@@ -93,10 +93,57 @@ set PC, POP
 ;=================================================
 
 ;=================================================
-;===| Main Logic
+;===| Draw a Solid Wall
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
+:drawSolidWall
+
+set x, 0x0000
+set y, 0x0003
+set z, 0x001e
+jsr drawHorizontalLine
+
+set x, 0x0000
+set y, 0x0008
+set z, 0x001e
+jsr drawHorizontalLine
+
+set PC, POP
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
+;=================================================
+
+;=================================================
+;===| Drawing Functions
 ;===============
 
-;===| Draw Square
+;===| Draw Lines
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
+:drawHorizontalLine
+;Input:
+; x - X coordinate of line origin
+; y - Y coordinate of line origin
+; z - length of line
+
+; Calculate location on screen
+set push, z
+jsr calculateCoordinateLocation
+set x, z
+set z, pop
+
+set i, 0
+
+:drawHorizontalLine_loop
+add x, 1
+add i, 1
+set [x], 0x2001
+ifg z, i
+	set PC, drawHorizontalLine_loop
+
+set PC, POP
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
+
+;===| Draw Squares
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
 :drawSquareTop
@@ -221,8 +268,9 @@ set a, POP
 
 ; draw intial view
 jsr drawMainWindow
-jsr drawMiddle
-jsr drawFar
+;jsr drawMiddle
+;jsr drawFar
+jsr drawSolidWall
 
 set PC, POP
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
