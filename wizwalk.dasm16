@@ -632,10 +632,32 @@ set pc, pop
 ;===| Draw Floor
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
 :drawFloor
+; parameters:
+; x - room number
+; locals:
+set push, a
 
+set a, x
+add a, [roomDataLength]
+sub a, 1
 
+ife [a], 0x0000
+	set pc, drawFloor_end
+
+; -----
+set push, x
+set push, y
+set push, z
+set x, 9
+set y, 10
+jsr calculateCoordinateLocation
+set [z], 0x2041
+set z, pop
+set y, pop
+set x, pop
 
 :drawFloor_end
+set a, pop
 set pc, pop
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
 
@@ -695,19 +717,33 @@ set pc, pop
 :compassDirection DAT 0x204e, 0x2045, 0x2053, 0x2057
 
 ;===| View Descriptions
-:viewTunnel DAT 0x0001 ; 0x818d
-:viewWall DAT 0x0002 ; 0x818e
-:viewDoor DAT 0x0003 ; 0x818f
+:viewTunnel DAT 0x0001
+:viewWall DAT 0x0002
+:viewDoor DAT 0x0003
+
+;===| Floor Items
+:floorItem001 DAT 0x0001
 
 ;===| Location Details (N/E/S/W View/Adjoinings)
-:room001 DAT 0x0001, 0x0002, 0x0001, 0x0003, 0x0002, 0x0000, 0x0003, 0x0004
-:room002 DAT 0x0002, 0x0003, 0x0001, 0x0002, 0x0000, 0x0005, 0x0001, 0x0000
-:room003 DAT 0x0001, 0x0002, 0x0002, 0x0002, 0x0001, 0x0000, 0x0000, 0x0000
-:room004 DAT 0x0002, 0x0003, 0x0002, 0x0002, 0x0000, 0x0001, 0x0000, 0x0000
-:room005 DAT 0x0002, 0x0003, 0x0002, 0x0003, 0x0000, 0x0006, 0x0000, 0x0002
-:room006 DAT 0x0003, 0x0002, 0x0002, 0x0003, 0x0007, 0x0000, 0x0000, 0x0005
-:room007 DAT 0x0002, 0x0002, 0x0003, 0x0002, 0x0000, 0x0000, 0x0006, 0x0000
+; format:
+; 1-4 Facings (N, E, S, W)
+; 5-8 Next Room (N, E, S, W)
+;   9 Floor
 
+:roomDataLength DAT 0x0009
+
+:room001 DAT 0x0001, 0x0002, 0x0001, 0x0003, 0x0002, 0x0000, 0x0003, 0x0004, 0x0001
+:room002 DAT 0x0002, 0x0003, 0x0001, 0x0002, 0x0000, 0x0005, 0x0001, 0x0000, 0x0001
+:room003 DAT 0x0001, 0x0002, 0x0002, 0x0002, 0x0001, 0x0000, 0x0000, 0x0000, 0x0000
+:room004 DAT 0x0002, 0x0003, 0x0002, 0x0002, 0x0000, 0x0001, 0x0000, 0x0000, 0x0000
+:room005 DAT 0x0002, 0x0003, 0x0002, 0x0003, 0x0000, 0x0006, 0x0000, 0x0002, 0x0000
+:room006 DAT 0x0003, 0x0002, 0x0002, 0x0003, 0x0007, 0x0000, 0x0000, 0x0005, 0x0000
+:room007 DAT 0x0002, 0x0002, 0x0003, 0x0002, 0x0000, 0x0000, 0x0006, 0x0000, 0x0000
+
+;===| Room Messages
+;   1 Length
+; 2-x characters
+:message001 DAT 0x0005 0x2053 0x2074 0x2061 0x2072 0x2074
 
 ;===| Border Tiles
 :border0 DAT 0xff01, 0x0101 ; 0x8180 top left 
@@ -798,7 +834,7 @@ set pc, moveForward_end
 set x, room001
 set b, [a]
 sub b, 1
-mul b, 8
+mul b, [roomDataLength]
 add x, b
 
 :moveForward_end
@@ -839,6 +875,7 @@ set a, pop
 set z, pop
 ;-----
 
+
 :drawView_end
 set a, pop
 set pc, pop
@@ -849,22 +886,29 @@ set pc, pop
 set push, x
 set push, y
 set push, z
+set push, i
+set push, j
+set push, a
 
 ; -----
 set x, 1
 set y, 11
 jsr calculateCoordinateLocation
-set [z], 0x2053
+
+set a, [message001]
+set j, 1
+:message_loop
+set [z], [message001+j]
+add j, 1
+ifg j, a
+	set pc, drawStartLocation_end
 add z, 1
-set [z], 0x2074
-add z, 1
-set [z], 0x2061
-add z, 1
-set [z], 0x2072
-add z, 1
-set [z], 0x2074
+set pc, message_loop
 
 :drawStartLocation_end
+set a, pop
+set j, pop
+set i, pop
 set z, pop
 set y, pop
 set x, pop
