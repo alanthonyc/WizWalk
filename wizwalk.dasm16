@@ -399,7 +399,7 @@ set x, 0x8000
 set [x], 0x0000
 add x, 1
 ifg 0x817f, x
-	set pc, clearNextCoordinate
+set pc, clearNextCoordinate
 
 :clearScreen_end
 set x, pop
@@ -430,7 +430,7 @@ add x, 1
 add i, 1
 set [x], a
 ifg z, i
-	set PC, drawHorizontalLine_loop
+set PC, drawHorizontalLine_loop
 
 :drawHorizontalLine_end
 set i, pop
@@ -460,7 +460,7 @@ add x, 0x0020
 add i, 1
 set [x], a
 ifg z, i
-	set PC, drawVerticalLine_loop
+set PC, drawVerticalLine_loop
 
 :drawVerticalLine_end
 set i, pop
@@ -492,7 +492,7 @@ add x, 1
 add i, 1
 set [x], 0x2001
 ifg z, i
-	set PC, drawSquareTop_loop
+set PC, drawSquareTop_loop
 
 set [x], 0x2002
 
@@ -524,7 +524,7 @@ add x, 1
 add i, 1
 set [x], 0x2004
 ifg z, i
-	set PC, drawSquareBottom_loop
+set PC, drawSquareBottom_loop
 
 set [x], 0x2005
 
@@ -555,7 +555,7 @@ add x, 0x0020
 add i, 1
 set [x], 0x2006
 ifg z, i
-	set PC, drawSquareLeft_loop
+set PC, drawSquareLeft_loop
 
 :drawSquareLeft_end
 set i, pop
@@ -584,7 +584,7 @@ add x, 0x0020
 add i, 1
 set [x], 0x2007
 ifg z, i
-	set PC, drawSquareRight_loop
+set PC, drawSquareRight_loop
 
 :drawSquareRight_end
 set i, pop
@@ -628,12 +628,23 @@ jsr drawFar
 set pc, pop
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
 
+
+;===| Draw Floor
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
+:drawFloor
+
+
+
+:drawFloor_end
+set pc, pop
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
+
 ;=================================================
 
 ;=================================================
 ;===| Utilities
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
-:loadtiles 
+:loadtiles
 ; Parameters:
 ; A = Data to Read
 ; B = Length
@@ -649,7 +660,7 @@ ADD a, 1
 ADD i, 1
 ADD c, 1
 IFE i, b
-    SET PC, loadtiles_end
+SET PC, loadtiles_end
 SET PC, loadtiles_loop
 
 :loadtiles_end
@@ -699,7 +710,7 @@ set pc, pop
 
 
 ;===| Border Tiles
-:border0 DAT 0xff01, 0x0101 ; 0x8180 top left  
+:border0 DAT 0xff01, 0x0101 ; 0x8180 top left 
 :border1 DAT 0x0101, 0x0101 ; 0x8181 top
 :border2 DAT 0x0101, 0x01ff ; 0x8182 top right
 :border3 DAT 0xff80, 0x8080 ; 0x8183 bottom left
@@ -712,8 +723,8 @@ set pc, pop
 :doorRight0 DAT 0x8040, 0x2010 ; 0x8188 top left
 :doorRight1 DAT 0x0804, 0x02ff ; 0x8189 top right
 :doorRight2 DAT 0x0000, 0x001f ; 0x818a bottom right
-:doorLeft0 DAT 0xff02, 0x0408  ; 0x818b top left
-:doorLeft1 Dat 0x1020, 0x4080  ; 0x818c top right
+:doorLeft0 DAT 0xff02, 0x0408 ; 0x818b top left
+:doorLeft1 Dat 0x1020, 0x4080 ; 0x818c top right
 
 ;=================================================
 
@@ -734,33 +745,33 @@ jsr drawStartLocation
 
 :inputLoop
 ife [0x9000+b], 0
-	set pc, inputLoop
+set pc, inputLoop
 jsr clearScreen
 
 ; calculate action based on keypress
 ife [0x9000+b], 0x002e ; turn right
-    add j, 1
+add j, 1
 ife [0x9000+b], 0x002c ; turn left
-	sub j, 1
+sub j, 1
 ife j, 5
-	set j, 1
+set j, 1
 ife j, 0
-	set j, 4
+set j, 4
 ife [0x9000+b], 0x0020 ; move forward
-	jsr moveForward
+jsr moveForward
 
 ; increment keyboard buffer pointer
 set [0x9000+b], 0
 add b, 1
 ife b, 16
-	set b, 0
+set b, 0
 
 ; Draw player's view, depending on facing
 jsr drawView
 ife x, room001
-	jsr drawStartLocation
+jsr drawStartLocation
 ife x, room007
-	jsr drawEndLocation
+jsr drawEndLocation
 set pc, inputLoop
 
 ; inifite loop at the end, otherwise, it falls through to some weird code and mucks up my screen
@@ -782,7 +793,7 @@ add a, 3
 add a, j
 
 ife [a], 0x0000
-	set pc, moveForward_end
+set pc, moveForward_end
 
 set x, room001
 set b, [a]
@@ -810,11 +821,11 @@ add a, j ; add facing to room
 sub a, 1
 
 ife [a], [viewTunnel]
-	jsr drawTunnel
+jsr drawTunnel
 ife [a], [viewDoor]
-	jsr drawDoorFacing
+jsr drawDoorFacing
 ife [a], [viewWall]
-	jsr drawWallFacing
+jsr drawWallFacing
 
 ;-----
 set push, z
@@ -908,5 +919,5 @@ set x, pop
 set pc, pop
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
 
-;=================================================
+;================================================= 
 
