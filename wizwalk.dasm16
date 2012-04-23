@@ -676,18 +676,30 @@ set pc, pop
 
 ;=================================================
 ;===| Main loop
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
 :main
 jsr initStart
 
 ; draw intial view
-jsr drawMainWindow
-jsr drawMiddle
-jsr drawFar
-jsr drawDoorRightFar
-jsr drawDoorLeftNear
+;jsr drawMainWindow
+;jsr drawMiddle
+;jsr drawFar
+;jsr drawDoorRightFar
+;jsr drawDoorLeftNear
+
+; top right of door
+;set x, 16
+;set y, 11
+; Calculate location on screen
+;jsr calculateCoordinateLocation
+;set x, z
+;set [x], 0x204e
 
 set j, 0
 set b, 0
+
+jsr faceNorth
 
 :inputLoop
 ife [0x9000+b], 0
@@ -702,39 +714,123 @@ ife b, 16
 add j, 1
 ife j, 4
 	set j, 0
-      
-ife j, 1
-	set pc faceEast
-ife j, 2
-	set pc faceSouth
-ife j, 3
-	set pc faceWest
 
+ife j, 0
+	jsr faceNorth
+ife j, 1
+	jsr faceEast
+ife j, 2
+	jsr faceSouth
+ife j, 3
+	jsr faceWest
+    
+set pc, inputLoop
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
 :faceNorth
+; locals
+set push, x
+set push, y
+set push, z
+
 jsr drawMainWindow
 jsr drawMiddle
 jsr drawFar
 jsr drawDoorRightFar
 jsr drawDoorLeftNear
-set pc, inputLoop
 
+; top right of door
+set x, 16
+set y, 11
+; Calculate location on screen
+jsr calculateCoordinateLocation
+set x, z
+set [x], 0x204e
+
+:faceNorth_end
+set z, pop
+set y, pop
+set x, pop
+set pc, pop
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
 :faceEast
+; locals
+set push, x
+set push, y
+set push, z
+
 jsr drawMainWindow
 jsr drawWallFacing
-set pc, inputLoop
 
+; top right of door
+set x, 16
+set y, 11
+; Calculate location on screen
+jsr calculateCoordinateLocation
+set x, z
+set [x], 0x2045
+
+:faceEast_end
+set z, pop
+set y, pop
+set x, pop
+set pc, pop
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
 :faceSouth
+; locals
+set push, x
+set push, y
+set push, z
+
 jsr drawMainWindow
 jsr drawMiddle
 jsr drawFar
 jsr drawDoorRightNear
-set pc, inputLoop
 
+; top right of door
+set x, 16
+set y, 11
+; Calculate location on screen
+jsr calculateCoordinateLocation
+set x, z
+set [x], 0x2053
+
+:faceSouth_end
+set z, pop
+set y, pop
+set x, pop
+set pc, pop
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
 :faceWest
+; locals
+set push, x
+set push, y
+set push, z
+
 jsr drawMainWindow
 jsr drawDoorFacing
-set pc, inputLoop
 
+; top right of door
+set x, 16
+set y, 11
+; Calculate location on screen
+jsr calculateCoordinateLocation
+set x, z
+set [x], 0x2057
+
+:faceWest_end
+set z, pop
+set y, pop
+set x, pop
+set pc, pop
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
 
 ; inifite loop at the end, otherwise, it falls through to some weird code and mucks up my screen
 :end
