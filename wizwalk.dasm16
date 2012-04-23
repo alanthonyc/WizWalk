@@ -1,5 +1,8 @@
 set pc, main
 
+; "," to face left
+; "." to face right
+; "<space>" to move forward
 
 ;=================================================
 ;===| Drawing Functions
@@ -727,6 +730,7 @@ set x, room001 ; player starting location
 set j, 1 ; facing
 
 jsr drawView
+jsr drawStartLocation
 
 :inputLoop
 ife [0x9000+b], 0
@@ -753,6 +757,10 @@ ife b, 16
 
 ; Draw player's view, depending on facing
 jsr drawView
+ife x, room001
+	jsr drawStartLocation
+ife x, room007
+	jsr drawEndLocation
 set pc, inputLoop
 
 ; inifite loop at the end, otherwise, it falls through to some weird code and mucks up my screen
@@ -824,6 +832,57 @@ set z, pop
 set a, pop
 set pc, pop
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
+:drawStartLocation
+set push, x
+set push, y
+set push, z
+
+; -----
+set x, 1
+set y, 11
+jsr calculateCoordinateLocation
+set [z], 0x2053
+add z, 1
+set [z], 0x2074
+add z, 1
+set [z], 0x2061
+add z, 1
+set [z], 0x2072
+add z, 1
+set [z], 0x2074
+
+:drawStartLocation_end
+set z, pop
+set y, pop
+set x, pop
+set pc, pop
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
+:drawEndLocation
+set push, x
+set push, y
+set push, z
+
+; -----
+set x, 1
+set y, 11
+jsr calculateCoordinateLocation
+set [z], 0x2045
+add z, 1
+set [z], 0x206e
+add z, 1
+set [z], 0x2064
+
+:drawEndLocation_end
+set z, pop
+set y, pop
+set x, pop
+set pc, pop
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
 :displayCompassDirection
