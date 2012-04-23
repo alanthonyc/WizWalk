@@ -683,7 +683,7 @@ set pc, pop
 :viewDoor DAT 0x0003 ; 0x818f
 
 ;===| Location Details (N/E/S/W View)
-:room001 DAT 0x0001, 0x0002, 0x0001, 0x0003
+:room001 DAT 0x0001, 0x0002, 0x0001, 0x0003, 0x0002, 0x0000, 0x0000, 0x0000
 
 ;===| Border Tiles
 :border0 DAT 0xff01, 0x0101 ; 0x8180 top left  
@@ -760,31 +760,26 @@ set pc, main_end
 ; parameters:
 ; x - room location
 ; locals:
+; a - work variable
+set push, a
 
 ;XXXXX
-jsr drawTunnel
-jsr drawDoorRightFar
-jsr drawDoorLeftNear
+;jsr drawTunnel
+;jsr drawDoorRightFar
+;jsr drawDoorLeftNear
 ;XXXXX
 
-; -----TEMP
-set push, x
-set push, y 
-set push, z ; screen location
-set x, 18
-set y, 11
-jsr calculateCoordinateLocation
+; determine facing view based on room+facing
+set a, x ; set room
+add a, j ; add facing to room
+sub a, 1
 
-set x, room001
-add x, 1
-set y, 0x2041
-add y, [x]
-set [z], y
-
-set pop, z
-set pop, y
-set pop, x
-; -----
+ife [a], [viewTunnel]
+	jsr drawTunnel
+ife [a], [viewDoor]
+	jsr drawDoorFacing
+ife [a], [viewWall]
+	jsr drawWallFacing
 
 ;-----
 set push, z
@@ -794,6 +789,7 @@ set z, pop
 ;-----
 
 :faceNorth_end
+set a, pop
 set pc, pop
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
 
