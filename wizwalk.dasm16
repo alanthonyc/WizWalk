@@ -595,7 +595,7 @@ set PUSH, a
 set PUSH, b
 set PUSH, c
 
-; load border tiles
+; load tiles
 set b, 0x001a
 set c, 0x8180
 set a, border0
@@ -607,6 +607,24 @@ set b, pop
 set a, pop
 set pc, pop
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
+;=================================================
+
+;=================================================
+;===| View Drawings
+;=================================================
+
+;===| Draw Tunnel
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
+:drawTunnel
+
+jsr drawMainWindow
+jsr drawMiddle
+jsr drawFar
+
+:drawTunnel_end
+set pc, pop
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
+
 ;=================================================
 
 ;=================================================
@@ -659,6 +677,14 @@ set pc, pop
 ;=================================================
 ;===| Data
 
+;===| View Descriptions
+:viewTunnel DAT 0x0001 ; 0x818d
+:viewWall DAT 0x0002 ; 0x818e
+:viewDoor DAT 0x0003 ; 0x818f
+
+;===| Location Details (N/E/S/W View)
+:room001 DAT 0x0001, 0x0002, 0x0001, 0x0003
+
 ;===| Border Tiles
 :border0 DAT 0xff01, 0x0101 ; 0x8180 top left  
 :border1 DAT 0x0101, 0x0101 ; 0x8181 top
@@ -675,14 +701,6 @@ set pc, pop
 :doorRight2 DAT 0x0000, 0x001f ; 0x818a bottom right
 :doorLeft0 DAT 0xff02, 0x0408  ; 0x818b top left
 :doorLeft1 Dat 0x1020, 0x4080  ; 0x818c top right
-
-;===| View Descriptions
-:viewTunnel DAT 0x0001 ; 0x818d
-:viewWall DAT 0x0002 ; 0x818e
-:viewDoor DAT 0x0003 ; 0x818f
-
-;===| Location Details (N/E/S/W View)
-:room001 DAT 0x0001, 0x0002, 0x0001, 0x0003
 
 ;=================================================
 
@@ -743,11 +761,30 @@ set pc, main_end
 ; x - room location
 ; locals:
 
-jsr drawMainWindow
-jsr drawMiddle
-jsr drawFar
+;XXXXX
+jsr drawTunnel
 jsr drawDoorRightFar
 jsr drawDoorLeftNear
+;XXXXX
+
+; -----TEMP
+set push, x
+set push, y 
+set push, z ; screen location
+set x, 18
+set y, 11
+jsr calculateCoordinateLocation
+
+set x, room001
+add x, 1
+set y, 0x2041
+add y, [x]
+set [z], y
+
+set pop, z
+set pop, y
+set pop, x
+; -----
 
 ;-----
 set push, z
@@ -791,9 +828,7 @@ set push, x
 set push, y
 set push, z
 
-jsr drawMainWindow
-jsr drawMiddle
-jsr drawFar
+jsr drawTunnel
 jsr drawDoorRightNear
 
 ;-----
