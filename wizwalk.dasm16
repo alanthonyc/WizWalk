@@ -677,6 +677,9 @@ set pc, pop
 ;=================================================
 ;===| Data
 
+;===| Compass Directions
+:compassDirection DAT 0x204e, 0x2045, 0x2053, 0x2057
+
 ;===| View Descriptions
 :viewTunnel DAT 0x0001 ; 0x818d
 :viewWall DAT 0x0002 ; 0x818e
@@ -716,7 +719,7 @@ set b, 0 ; keyboard buffer
 set x, room001 ; player location
 set j, 1 ; facing
 
-jsr faceNorth
+jsr drawView
 
 :inputLoop
 ife [0x9000+b], 0
@@ -740,14 +743,7 @@ ife b, 16
 	set b, 0
 
 ; Draw player's view, depending on facing
-ife j, 1
-	jsr faceNorth
-ife j, 2
-	jsr faceEast
-ife j, 3
-	jsr faceSouth
-ife j, 4
-	jsr faceWest
+jsr drawView
 set pc, inputLoop
 
 ; inifite loop at the end, otherwise, it falls through to some weird code and mucks up my screen
@@ -756,18 +752,12 @@ set pc, main_end
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
-:faceNorth
+:drawView
 ; parameters:
 ; x - room location
 ; locals:
 ; a - work variable
 set push, a
-
-;XXXXX
-;jsr drawTunnel
-;jsr drawDoorRightFar
-;jsr drawDoorLeftNear
-;XXXXX
 
 ; determine facing view based on room+facing
 set a, x ; set room
@@ -783,85 +773,18 @@ ife [a], [viewWall]
 
 ;-----
 set push, z
-set z, 0x204e
+set push, a
+set a, compassDirection
+add a, j
+sub a, 1
+set z, [a]
 jsr displayCompassDirection
-set z, pop
-;-----
-
-:faceNorth_end
 set a, pop
-set pc, pop
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
-:faceEast
-; locals
-set push, x
-set push, y
-set push, z
-
-jsr drawMainWindow
-jsr drawWallFacing
-
-;-----
-set push, z
-set z, 0x2045
-jsr displayCompassDirection
 set z, pop
 ;-----
 
-:faceEast_end
-set z, pop
-set y, pop
-set x, pop
-set pc, pop
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
-:faceSouth
-; locals
-set push, x
-set push, y
-set push, z
-
-jsr drawTunnel
-jsr drawDoorRightNear
-
-;-----
-set push, z
-set z, 0x2053
-jsr displayCompassDirection
-set z, pop
-;-----
-
-:faceSouth_end
-set z, pop
-set y, pop
-set x, pop
-set pc, pop
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
-:faceWest
-; locals
-set push, x
-set push, y
-set push, z
-
-jsr drawMainWindow
-jsr drawDoorFacing
-
-;-----
-set push, z
-set z, 0x2057
-jsr displayCompassDirection
-set z, pop
-;-----
-
-:faceWest_end
-set z, pop
-set y, pop
-set x, pop
+:drawView_end
+set a, pop
 set pc, pop
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
 
