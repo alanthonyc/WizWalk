@@ -675,28 +675,13 @@ set pc, pop
 
 
 ;=================================================
-;===| Main loop
+;===| Main logic
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
 :main
 jsr initStart
-
-; draw intial view
-;jsr drawMainWindow
-;jsr drawMiddle
-;jsr drawFar
-;jsr drawDoorRightFar
-;jsr drawDoorLeftNear
-
-; top right of door
-;set x, 16
-;set y, 11
-; Calculate location on screen
-;jsr calculateCoordinateLocation
-;set x, z
-;set [x], 0x204e
-
-set j, 0
+; locals
+set j, 1
 set b, 0
 
 jsr faceNorth
@@ -704,27 +689,38 @@ jsr faceNorth
 :inputLoop
 ife [0x9000+b], 0
 	set pc, inputLoop
-
-set [0x9000+b], 0
 jsr clearScreen
+
+; calculate new facing based on keypress
+ife [0x9000+b], 0x002e
+    add j, 1
+ife [0x9000+b], 0x002c
+	sub j, 1
+ife j, 5
+	set j, 1
+ife j, 0
+	set j, 4
+
+; increment keyboard buffer pointer
+set [0x9000+b], 0
 add b, 1
 ife b, 16
 	set b, 0
 
-add j, 1
-ife j, 4
-	set j, 0
-
-ife j, 0
-	jsr faceNorth
+; Draw player's view, depending on facing
 ife j, 1
-	jsr faceEast
+	jsr faceNorth
 ife j, 2
-	jsr faceSouth
+	jsr faceEast
 ife j, 3
+	jsr faceSouth
+ife j, 4
 	jsr faceWest
-    
 set pc, inputLoop
+
+; inifite loop at the end, otherwise, it falls through to some weird code and mucks up my screen
+:main_end
+set pc, main_end
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; \
@@ -832,8 +828,5 @@ set x, pop
 set pc, pop
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; /
 
-; inifite loop at the end, otherwise, it falls through to some weird code and mucks up my screen
-:end
-set pc, end
 ;=================================================
 
